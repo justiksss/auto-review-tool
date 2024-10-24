@@ -1,4 +1,6 @@
-from src.models.review import ReviewResponseEntityModel
+from redis.exceptions import ConnectionError
+
+from src.models.review import ReviewResponseEntityModel, FoundFile
 from src.services.base import BaseService
 from src.services.cache import CacheService
 from src.services.github import GitHubIntegrationService
@@ -17,23 +19,34 @@ class ReviewService(BaseService):
         repository_owner, repository_name = self.github_service.get_repository_info(str(schema.github_repo_url))
 
         async with self.github_service.async_client:
-            files_content = await self.cache_service.get_record(
-                cache_key=str(schema.github_repo_url)
-            )
+            files_content = None
 
-            if files_content is None:  # not found in cache
+            try:
+                files_content = await self.cache_service.get_record(
+                    cache_key=str(schema.github_repo_url)
+                )
+
+                if files_content is None:  # not found in cache
+                    files_content = await self.github_service.fetch_all_files(
+                        owner=repository_owner, repository_name=repository_name
+                    )
+                    await self.cache_service.create_record(cache_key=str(schema.github_repo_url),
+                                                           data=[file.model_dump(mode="json") for file in
+                                                                 files_content])
+            except ConnectionError as error:
+                print(f"Redis unavailable {error}")
+
+            if files_content is None:
                 files_content = await self.github_service.fetch_all_files(
                     owner=repository_owner, repository_name=repository_name
                 )
-                await self.cache_service.create_record(cache_key=str(schema.github_repo_url),
-                                                       data=[file.model_dump(mode="json") for file in files_content])
 
             openai_response = await self.openai_service.get_repository_report(
                 files=files_content
             )
 
             return ReviewResponseEntityModel(
-                found_files=files_content,
+                found_files=[FoundFile.model_validate(file.model_dump()) for file in files_content],
                 **openai_response.model_dump()
             )
 

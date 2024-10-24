@@ -3,11 +3,15 @@ from typing import Annotated
 from pydantic import Field
 
 from src.models.base import BaseEntityModel
-from src.models.github import GitHubFileContent
+
+
+class FoundFile(BaseEntityModel):
+    file_path: Annotated[str, Field()]
+    file_name: Annotated[str, Field()]
 
 
 class ReviewResponseEntityModel(BaseEntityModel):
-    found_files: Annotated[list[GitHubFileContent] | None, Field()] = None
+    found_files: Annotated[list[FoundFile] | None, Field()] = None
     comments: Annotated[str | None, Field()] = None
 
     rating: Annotated[str | None, Field()] = None
