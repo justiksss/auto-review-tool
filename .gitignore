@@ -1,0 +1,17 @@
+# Envs
+.env
+
+# IDE
+.idea
+.vscode
+
+# Cache files
+__pycache__
+
+
+# Coverage
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*,cover
