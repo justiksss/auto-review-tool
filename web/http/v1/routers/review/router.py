@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends
 
+from src.models.review import ReviewResponseEntityModel
 from src.services.review import ReviewService
 from web.http.v1.dependecies.services import get_review_service
 from web.http.v1.routers.review.schemas.body import ReviewBody
@@ -9,7 +10,7 @@ from web.http.v1.routers.review.schemas.body import ReviewBody
 review_router = APIRouter()
 
 
-@review_router.post("/")
+@review_router.post("/", response_model=ReviewResponseEntityModel)
 async def review_cv(
         body: Annotated[ReviewBody, Body()],
         review_service: Annotated[ReviewService, Depends(get_review_service)]

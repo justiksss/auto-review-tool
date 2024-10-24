@@ -22,6 +22,4 @@ RUN poetry install --no-interaction --no-ansi
 
 COPY . .
 
-
-# Command to run the specific Python file
 CMD ["python", "entrypoints/asgi.py"]

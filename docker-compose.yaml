@@ -4,16 +4,16 @@ services:
   web:
     build: .
     ports:
-      - "8099:8099"  # Map host port 8099 to container port 8099
+      - "8099:8099"
     environment:
       API_HOST: "0.0.0.0"
       API_PORT: "8099"
-      REDIS_HOST: "redis"  # Hostname of the Redis service
+      REDIS_HOST: "redis"
       REDIS_PORT: "6379"
     depends_on:
       - redis
 
   redis:
-    image: "redis:alpine"  # Use the lightweight Alpine version of Redis
+    image: "redis:alpine"
     ports:
-      - "6379:6379"  # Map host port 6379 to container port 6379
+      - "6379:6379"
