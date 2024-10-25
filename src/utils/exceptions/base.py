@@ -1,0 +1,6 @@
+
+
+class BaseApplicationException(Exception):
+    ...
+
+

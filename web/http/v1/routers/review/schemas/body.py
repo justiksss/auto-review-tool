@@ -16,13 +16,13 @@ class CandidateLevels(StrEnum):
 class ReviewBody(BaseAPISchema):
     assignment_description: Annotated[str, Field(min_length=12)]
 
-    github_repo_url: Annotated[HttpUrl, Field()]
+    github_repo_url: Annotated[HttpUrl, Field(examples=['https://github.com/fastapi/fastapi'])]
     candidate_level: Annotated[CandidateLevels, Field()]
 
     @field_validator('github_repo_url')
     def validate_github_repo_url(cls, value: HttpUrl) -> HttpUrl:
-        if not value.host.startswith('https://github.com/'):
-            raise HTTPException(status_code=422, detail='Github repo url must start with "https://github.com/"')
+        if not value.host.startswith('github.com'):
+            raise HTTPException(status_code=422, detail='Github repo url must start with github.com')
             # replace on own exception
 
         return value
